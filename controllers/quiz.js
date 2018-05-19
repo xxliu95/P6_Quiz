@@ -58,6 +58,8 @@ exports.create = (req, res, next) => {
         answer
     });
 
+    req.session.toBeResolved = "";
+
     // Saves only the fields question and answer into the DDBB
     quiz.save({fields: ["question", "answer"]})
     .then(quiz => {
