@@ -30,10 +30,8 @@ var sequelize = require("./models");
 var sessionStore = new SequelizeStore({
     db: sequelize,
     table: "session",
-    checkExpirationInterval: 60 * 1000, // The interval at which to cleanup expired sessions in milliseconds. (15 minutes)
-    expiration: 60 * 1000  // The maximum age (in milliseconds) of a valid session. (4 hours)
-    //checkExpirationInterval: 15 * 60 * 1000, // The interval at which to cleanup expired sessions in milliseconds. (15 minutes)
-    //expiration: 4 * 60 * 60 * 1000  // The maximum age (in milliseconds) of a valid session. (4 hours)
+    checkExpirationInterval: 15 * 60 * 1000, // The interval at which to cleanup expired sessions in milliseconds. (15 minutes)
+    expiration: 4 * 60 * 60 * 1000  // The maximum age (in milliseconds) of a valid session. (4 hours)
 });
 app.use(session({
     secret: "Quiz 2018",
