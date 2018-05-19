@@ -224,7 +224,7 @@ renderQuiz = (req, res, next) => {
                     score,
                 });
             } else {
-                res.render('quizzes/random_noquiz')
+                res.render('quizzes/random_noquiz',{score:0})
                 //throw new Error('There is no quizzes');
             }
         })
