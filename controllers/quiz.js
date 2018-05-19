@@ -153,3 +153,77 @@ exports.check = (req, res, next) => {
         answer
     });
 };
+
+// GET /quizzes/randomplay
+exports.randomplay = (req, res, next) => {
+    if(req.session.toBeResolved){
+        renderQuiz(req, res, next);
+    } else {
+        req.session.toBeResolved = [];
+        req.session.score = 0;
+        let i = 0;
+        models.quiz.findAll()
+            .each(quiz => {
+                req.session.toBeResolved[i] = quiz.id;
+                i++;
+            })
+            .then(() => {
+                renderQuiz(req, res, next);
+            })
+    }
+
+}
+
+// GET /quizzes/randomcheck/:quizId?answer=respuesta
+exports.randomcheck = (req, res, next) => {
+    const {quiz, query} = req;
+
+    const answer = query.answer || "";
+    const result = answer.toLowerCase().trim() === quiz.answer.toLowerCase().trim();
+
+    if(result){
+        req.session.toBeResolved.splice(req.session.num,1);
+        req.session.score ++;
+    }
+    const score = req.session.score;
+
+    if(req.session.toBeResolved.length === 0){
+        req.session.score = 0;
+        req.session.toBeResolved = "";
+        res.render('quizzes/random_nomore', {
+            score
+        });
+    }else{
+        res.render('quizzes/random_result', {
+            quiz,
+            result,
+            answer,
+            score
+        });
+    }
+
+
+
+
+}
+
+renderQuiz = (req, res, next) => {
+    req.session.num = Math.floor((Math.random() * req.session.toBeResolved.length));
+    let id = req.session.toBeResolved[req.session.num];
+    const query = req;
+    const score = req.session.score;
+    const answer = query.answer || '';
+    models.quiz.findById(id)
+        .then(quiz => {
+            if (quiz) {
+                res.render('quizzes/random_play',{
+                    quiz,
+                    answer,
+                    score,
+                });
+            } else {
+                throw new Error('There is no quizzes');
+            }
+        })
+        .catch(error => next(error));
+}
