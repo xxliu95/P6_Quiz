@@ -9,19 +9,20 @@ exports.load = (req, res, next, quizId) => {
 
     models.quiz.findById(quizId, {
         include: [
-            models.tip,
+            {model: models.tip,
+                include:[{model: models.user, as:'tipAuthor'}]},
             {model: models.user, as: 'author'}
         ]
     })
-    .then(quiz => {
-        if (quiz) {
-            req.quiz = quiz;
-            next();
-        } else {
-            throw new Error('There is no quiz with id=' + quizId);
-        }
-    })
-    .catch(error => next(error));
+        .then(quiz => {
+            if (quiz) {
+                req.quiz = quiz;
+                next();
+            } else {
+                throw new Error('There is no quiz with id=' + quizId);
+            }
+        })
+        .catch(error => next(error));
 };
 
 
@@ -64,36 +65,36 @@ exports.index = (req, res, next) => {
     }
 
     models.quiz.count(countOptions)
-    .then(count => {
+        .then(count => {
 
-        // Pagination:
+            // Pagination:
 
-        const items_per_page = 10;
+            const items_per_page = 10;
 
-        // The page to show is given in the query
-        const pageno = parseInt(req.query.pageno) || 1;
+            // The page to show is given in the query
+            const pageno = parseInt(req.query.pageno) || 1;
 
-        // Create a String with the HTMl used to render the pagination buttons.
-        // This String is added to a local variable of res, which is used into the application layout file.
-        res.locals.paginate_control = paginate(count, items_per_page, pageno, req.url);
+            // Create a String with the HTMl used to render the pagination buttons.
+            // This String is added to a local variable of res, which is used into the application layout file.
+            res.locals.paginate_control = paginate(count, items_per_page, pageno, req.url);
 
-        const findOptions = {
-            ...countOptions,
-            offset: items_per_page * (pageno - 1),
-            limit: items_per_page,
-            include: [{model: models.user, as: 'author'}]
-        };
+            const findOptions = {
+                ...countOptions,
+                offset: items_per_page * (pageno - 1),
+                limit: items_per_page,
+                include: [{model: models.user, as: 'author'}]
+            };
 
-        return models.quiz.findAll(findOptions);
-    })
-    .then(quizzes => {
-        res.render('quizzes/index.ejs', {
-            quizzes, 
-            search,
-            title
-        });
-    })
-    .catch(error => next(error));
+            return models.quiz.findAll(findOptions);
+        })
+        .then(quizzes => {
+            res.render('quizzes/index.ejs', {
+                quizzes,
+                search,
+                title
+            });
+        })
+        .catch(error => next(error));
 };
 
 
@@ -110,7 +111,7 @@ exports.show = (req, res, next) => {
 exports.new = (req, res, next) => {
 
     const quiz = {
-        question: "", 
+        question: "",
         answer: ""
     };
 
@@ -130,21 +131,23 @@ exports.create = (req, res, next) => {
         authorId
     });
 
+    req.session.toBeResolved = "";
+
     // Saves only the fields question and answer into the DDBB
     quiz.save({fields: ["question", "answer", "authorId"]})
-    .then(quiz => {
-        req.flash('success', 'Quiz created successfully.');
-        res.redirect('/quizzes/' + quiz.id);
-    })
-    .catch(Sequelize.ValidationError, error => {
-        req.flash('error', 'There are errors in the form:');
-        error.errors.forEach(({message}) => req.flash('error', message));
-        res.render('quizzes/new', {quiz});
-    })
-    .catch(error => {
-        req.flash('error', 'Error creating a new Quiz: ' + error.message);
-        next(error);
-    });
+        .then(quiz => {
+            req.flash('success', 'Quiz created successfully.');
+            res.redirect('/quizzes/' + quiz.id);
+        })
+        .catch(Sequelize.ValidationError, error => {
+            req.flash('error', 'There are errors in the form:');
+            error.errors.forEach(({message}) => req.flash('error', message));
+            res.render('quizzes/new', {quiz});
+        })
+        .catch(error => {
+            req.flash('error', 'Error creating a new Quiz: ' + error.message);
+            next(error);
+        });
 };
 
 
@@ -166,19 +169,19 @@ exports.update = (req, res, next) => {
     quiz.answer = body.answer;
 
     quiz.save({fields: ["question", "answer"]})
-    .then(quiz => {
-        req.flash('success', 'Quiz edited successfully.');
-        res.redirect('/quizzes/' + quiz.id);
-    })
-    .catch(Sequelize.ValidationError, error => {
-        req.flash('error', 'There are errors in the form:');
-        error.errors.forEach(({message}) => req.flash('error', message));
-        res.render('quizzes/edit', {quiz});
-    })
-    .catch(error => {
-        req.flash('error', 'Error editing the Quiz: ' + error.message);
-        next(error);
-    });
+        .then(quiz => {
+            req.flash('success', 'Quiz edited successfully.');
+            res.redirect('/quizzes/' + quiz.id);
+        })
+        .catch(Sequelize.ValidationError, error => {
+            req.flash('error', 'There are errors in the form:');
+            error.errors.forEach(({message}) => req.flash('error', message));
+            res.render('quizzes/edit', {quiz});
+        })
+        .catch(error => {
+            req.flash('error', 'Error editing the Quiz: ' + error.message);
+            next(error);
+        });
 };
 
 
@@ -186,14 +189,14 @@ exports.update = (req, res, next) => {
 exports.destroy = (req, res, next) => {
 
     req.quiz.destroy()
-    .then(() => {
-        req.flash('success', 'Quiz deleted successfully.');
-        res.redirect('/goback');
-    })
-    .catch(error => {
-        req.flash('error', 'Error deleting the Quiz: ' + error.message);
-        next(error);
-    });
+        .then(() => {
+            req.flash('success', 'Quiz deleted successfully.');
+            res.redirect('/goback');
+        })
+        .catch(error => {
+            req.flash('error', 'Error deleting the Quiz: ' + error.message);
+            next(error);
+        });
 };
 
 
@@ -225,3 +228,74 @@ exports.check = (req, res, next) => {
         answer
     });
 };
+
+// GET /quizzes/randomplay
+exports.randomplay = (req, res, next) => {
+    if(req.session.toBeResolved){
+        renderQuiz(req, res, next);
+    } else {
+        req.session.toBeResolved = [];
+        req.session.score = 0;
+        let i = 0;
+        models.quiz.findAll()
+            .each(quiz => {
+                req.session.toBeResolved[i] = quiz.id;
+                i++;
+            })
+            .then(() => {
+                renderQuiz(req, res, next);
+            })
+    }
+
+}
+
+// GET /quizzes/randomcheck/:quizId?answer=respuesta
+exports.randomcheck = (req, res, next) => {
+    const {quiz, query} = req;
+
+    const answer = query.answer || "";
+    const result = answer.toLowerCase().trim() === quiz.answer.toLowerCase().trim();
+
+    if(result){
+        req.session.toBeResolved.splice(req.session.num,1);
+        req.session.score ++;
+    }
+    const score = req.session.score;
+
+    if(req.session.toBeResolved.length === 0){
+        req.session.score = 0;
+        req.session.toBeResolved = "";
+        res.render('quizzes/random_nomore', {
+            score
+        });
+    }else{
+        res.render('quizzes/random_result', {
+            quiz,
+            result,
+            answer,
+            score
+        });
+    }
+}
+
+renderQuiz = (req, res, next) => {
+    req.session.num = Math.floor((Math.random() * req.session.toBeResolved.length));
+    let id = req.session.toBeResolved[req.session.num];
+    const query = req;
+    const score = req.session.score;
+    const answer = query.answer || '';
+    models.quiz.findById(id)
+        .then(quiz => {
+            if (quiz) {
+                res.render('quizzes/random_play',{
+                    quiz,
+                    answer,
+                    score,
+                });
+            } else {
+                res.render('quizzes/random_noquiz',{score:0})
+                //throw new Error('There is no quizzes');
+            }
+        })
+        .catch(error => next(error));
+}
