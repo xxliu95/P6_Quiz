@@ -203,10 +203,6 @@ exports.randomcheck = (req, res, next) => {
             score
         });
     }
-
-
-
-
 }
 
 renderQuiz = (req, res, next) => {
