@@ -8,6 +8,7 @@
 
 <form method="get" action="/quizzes/randomcheck/<%= quiz.id %>">
 
+
     <p>
         Question: <b><%= quiz.question %></b>
     </p>
@@ -17,6 +18,9 @@
         <input type="text" class="itemWide" id="answer" name="answer" value="" placeholder="Answer" autocomplete="off"/>
         <input type="submit" class="itemNarrow" id="send" value="Check">
     </div>
+    <p>
+        <small> (by <%= quiz.author ? quiz.author.username : "Anonymous" %>) </small>
+    </p>
 </form>
 
 
