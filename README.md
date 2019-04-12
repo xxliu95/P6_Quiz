@@ -10,19 +10,19 @@ Para probar:
 
 Pantalla de inicio:
 <br/>
-<img src="https://user-images.githubusercontent.com/28632986/56021721-75dd3c00-5d0a-11e9-94c5-bb4680b5fbd5.png" width="300">
+<img src="https://user-images.githubusercontent.com/28632986/56022345-bdb09300-5d0b-11e9-9222-c9ffe71d17df.png" width="300">
 
 Tras loguear:
 <br/>
-<img src="https://user-images.githubusercontent.com/28632986/56021738-7e357700-5d0a-11e9-9094-55e891a7b8d7.png" width="300">
+<img src="https://user-images.githubusercontent.com/28632986/56022346-bdb09300-5d0b-11e9-832b-228c3ec4e739.png" width="300">
 
 Para jugar se clickea en la pestaña de Play
 <br/>
-<img src="https://user-images.githubusercontent.com/28632986/56021751-8392c180-5d0a-11e9-80e0-ab109faf9202.png" width="300">
+<img src="https://user-images.githubusercontent.com/28632986/56022349-be492980-5d0b-11e9-9cd4-91568beac501.png" width="300">
 
 También puedes crear tus propias prenguntas
 <br/>
-<img src="https://user-images.githubusercontent.com/28632986/56021767-8ab9cf80-5d0a-11e9-9288-d536c603396f.png" width="300">
+<img src="https://user-images.githubusercontent.com/28632986/56022350-be492980-5d0b-11e9-9bed-7c9c3744d350.png" width="300">
 
 
 
