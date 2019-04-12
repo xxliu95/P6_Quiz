@@ -2,10 +2,13 @@
 ## Proyecto CORE 2018
 
 Para probar:
+- en local
 1. git checkout practica8
 2. npm install
 3. npm start
 4. Open browser with url localhost:5000
+
+- https://quiz-2018-xxl.herokuapp.com/
 
 
 Pantalla de inicio:
